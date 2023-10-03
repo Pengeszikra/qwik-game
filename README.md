@@ -16,6 +16,21 @@ pnpm qwik add tailwind
 Because qwik have awesome hydration philosophy, and give a different state handling than react have, and I know that way very well, so I like to try the `Signals`.
 > bonus: in JSX part qwik use `class` instead `className` God bless the creators!
 
+## Try implement some Signal 
+
+```ts
+import type { Signal } from "@builder.io/qwik";
+import type { Card, MultipleState, Owner, OwnerId } from '~/cardgame/cardFactory';
+
+export const sitDown = (
+  {value: owner}: Signal<Owner>,
+  store: MultipleState
+) => {
+  store.owners[owner.id] = owner;
+  store.order = [...store.order, owner.id];
+};
+```
+
 
 ## Qwik City App ⚡️
 
