@@ -3,25 +3,22 @@ import { createList, nextOf } from './arrayUtils';
 import { rndCard } from './card';
 
 type ACT<T> = (p:T, store: MultipleState) => void
-type BCT = (store: MultipleState) => void
+type DO = (store: MultipleState) => void
 
-export const sitDown = (
-  owner: Owner,
-  store: MultipleState
-) => {
+export const sitDown:ACT<Owner> = (owner, store) => {
   if (owner.id in store.owners) return;
 
   store.owners[owner.id] = owner;
   store.order = [...store.order, owner.id];
 };
 
-export const collect = (card:Card, store: MultipleState) => { card; store; }
+export const collect:ACT<Card> = (card, store) => { card; store; }
 
-export const draw = (id:OwnerId, store: MultipleState) => { id; store; }
+export const draw:ACT<OwnerId> = (id, store) => { id; store; }
 
 export const focus:ACT<OwnerId> = (id, store) => { store.focus = id; }
 
-export const playCard = (card:Card, store: MultipleState) => { 
+export const playCard:ACT<Card> = (card, store) => { 
   if (!(card.owner in store.owners) || store.flying) return;
   const hand = store.owners[card.owner].hand;
   if (hand.length < 1) return;
@@ -44,7 +41,7 @@ export const playCard = (card:Card, store: MultipleState) => {
 
   
 }
-export const playResult = ( store: MultipleState) => {
+export const playResult:DO = ( store) => {
   if (store.flying === undefined || store.diff === undefined) return store;
   const {score, hand, deck} = store.owners[store.flying.owner];
   const needToFill = hand.length < 3 && deck.length;
@@ -59,18 +56,17 @@ export const playResult = ( store: MultipleState) => {
   store.focus = nextOf(store.order, store.focus);
  }
 
-export const reset = ( store: MultipleState) => { store; }
+export const reset:DO = ( store) => { store; }
 
 export const setPercent = (value:number, store: MultipleState) => { value; store; }
 
-
 export const startBattle = (value:number, store: MultipleState) => { value; store; }
 
-export const undo = (card:Card, store: MultipleState) => { card; store; }
+export const undo:ACT<Card> = (card, store) => { card; store; }
 
-export const writeHistory = (value:number, store: MultipleState) => { value; store; }
+export const writeHistory:ACT<number> = (value, store) => { value; store; }
 
-export const virtualSetup:BCT = (store) => {
+export const virtualSetup:DO = (store) => {
   const botList = ["A-bot", "B-bot", "C-bot", "D-bot"];
 
   for (const bot of botList) {
@@ -91,3 +87,5 @@ export const virtualSetup:BCT = (store) => {
   draw(starterId, store);
   focus(nextId, store);
 }
+
+export const swapDebug:DO = (store) => store.visibility = !(store.visibility);

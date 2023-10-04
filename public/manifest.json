@@ -2,8 +2,17 @@
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
   "name": "qwik-project-name",
   "short_name": "Welcome to Qwik",
-  "start_url": ".",
+  "start_url": "/card",
   "display": "standalone",
-  "background_color": "#fff",
-  "description": "A Qwik project app."
+  "background_color": "#001122",
+  "description": "A Qwik project app.",
+  "icons": [
+    {
+      "src": "/fun-game-logo.png",
+      "type": "image/png",
+      "sizes": "1024x1024",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#001122"
 }
