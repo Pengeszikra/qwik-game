@@ -19,7 +19,10 @@ export default component$(() => {
   return (
     <QwikCityProvider>
       <head>
+        <title>qwik fun game</title>
+        <meta name="description" content="react to qwik test game based on game of function" />
         <meta charSet="utf-8" />
+        <meta name="theme-color" content="#001122"/>
         <link rel="manifest" href="/manifest.json" />
         <RouterHead />
       </head>

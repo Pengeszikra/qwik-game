@@ -31,6 +31,9 @@ export const sitDown = (
 };
 ```
 
+[trolls playing](https://www.bing.com/images/create/trolls-playing-a-cardgame-with-mathematical-2cminim/651d5c96a93440998db15456df84531b?id=dp1S1mSxI49GGMq2G%2BNPEg%3D%3D&view=detailv2&idpp=genimg&form=GCRIDP)
+
+[troll teaser](https://designerapp.officeapps.live.com/designerapp/Media.ashx/?id=f4f00d1d-7e7f-4801-8a2f-5361fac57dd5.mp4&fileToken=e1b85a99-3bba-46bb-a8be-6142dc022b2a&dcHint=WestEurope)
 
 ## Qwik City App ⚡️
 

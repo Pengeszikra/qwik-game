@@ -1,18 +1,22 @@
-import { component$, useStore } from "@builder.io/qwik";
+import { component$, useStore, useTask$ } from "@builder.io/qwik";
 import { cardInfo } from "~/cardgame/card";
 import { initialMultiState } from "~/cardgame/cardFactory";
-import { playCard, playResult, undo, virtualSetup } from "~/cardgame/q-utils";
+import { playCard, playResult, swapDebug, undo, virtualSetup } from "~/cardgame/q-utils";
+
+const twButton = "bg-green-400 hover:bg-green-200 text-black p-1 rounded text-center mt-2";
 
 export default component$(() => {
 
   const state = useStore(initialMultiState);
+
+  useTask$(async () => virtualSetup(state));
 
   return (
     <main class="bg-black min-h-screen grid place-items-center relative text-green-300">
       <section class="w-3/4 overflow-hidden">
         <p><s>React</s></p>
         <p>"The react-state-factory works as expected" ... qwik works better?</p>
-        <button class="bg-green-400 hover:bg-green-200 text-black p-1 rounded text-center mt-2" onClick$={() => virtualSetup(state)}>start the game</button>
+        {/* <button class={twButton} onClick$={() => virtualSetup(state)}>start the game</button> */}
         <br />
         <section class="grid grid-cols-4 gap-4 place-items-start">
           <section>
@@ -42,14 +46,14 @@ export default component$(() => {
               <p>- hand: </p>{
                 state.owners[ownerId].hand.map(card => (
                   ownerId === state.focus && !state.flying
-                    ? <p key={card.id}><button type="button" class="bg-green-400 hover:bg-green-200 text-black p-1 rounded text-center mb-2" onClick$={() => playCard(card, state)}>{cardInfo(card)}</button></p>
+                    ? <p key={card.id}><button type="button" class={`${twButton} mb-2`} onClick$={() => playCard(card, state)}>{cardInfo(card)}</button></p>
                     : <p key={card.id}>{cardInfo(card)}</p>
                 ))
               }
               {state.flying && ownerId === state.focus && (
                 <p class="flex gap-2">
-                  <button type="button" class="bg-green-400 hover:bg-green-200 text-black p-1 rounded text-center mt-2" onClick$={() => state.flying && undo(state.flying, state)}>undo</button>
-                  <button type="button" class="bg-green-400 hover:bg-green-200 text-black p-1 rounded text-center mt-2" onClick$={() => playResult(state)}>consent</button>
+                  <button type="button" class={twButton} onClick$={() => state.flying && undo(state.flying, state)}>undo</button>
+                  <button type="button" class={twButton} onClick$={() => playResult(state)}>consent</button>
                 </p>
               )}
               <p>- deck: </p>{
@@ -68,7 +72,8 @@ export default component$(() => {
             .map(({name, score}) => <p key={name}>{name} : {score}</p>)
           }
         </section>
-        {/* <pre>{JSON.stringify(state, null, 2)}</pre> */}
+        <button class={twButton} onClick$={() => swapDebug(state)}>{state.visible ? "off" : "debug"}</button>
+        {state.visibility && <pre class="text-green-700">{JSON.stringify(state, null, 2)}</pre>}
       </section>
     </main>
   )
