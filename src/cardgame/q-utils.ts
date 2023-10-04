@@ -57,7 +57,15 @@ export const playResult:DO = (store) => {
   store.focus = nextOf(store.order, store.focus);
  }
 
-export const reset:DO = ( store) => { store; }
+export const reset:DO = (store) => {
+  store.owners = {};
+  store.order = [];
+  store.center = undefined;
+  store.flying = undefined;
+  store.diff = undefined;
+  store.debug = "";
+}
+
 
 export const setPercent = (value:number, store: MultipleState) => { value; store; }
 
@@ -68,6 +76,8 @@ export const undo:ACT<Card> = (card, store) => { card; store; }
 export const writeHistory:ACT<number> = (value, store) => { value; store; }
 
 export const virtualSetup:DO = (store) => {
+  reset(store);
+
   const botList = ["A-bot", "B-bot", "C-bot", "D-bot"];
 
   for (const bot of botList) {
