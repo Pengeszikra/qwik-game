@@ -1,4 +1,4 @@
-import { component$, useStore, useTask$ } from "@builder.io/qwik";
+import { component$, useStore, useVisibleTask$ } from "@builder.io/qwik";
 import { cardInfo } from "~/cardgame/card";
 import { initialMultiState } from "~/cardgame/cardFactory";
 import { playCard, playResult, swapDebug, undo, virtualSetup } from "~/cardgame/q-utils";
@@ -9,14 +9,14 @@ export default component$(() => {
 
   const state = useStore(initialMultiState);
 
-  useTask$(async () => virtualSetup(state));
+  useVisibleTask$(async () => virtualSetup(state));
 
   return (
     <main class="bg-black min-h-screen grid place-items-center relative text-green-300">
       <section class="w-3/4 overflow-hidden">
         <p><s>React</s></p>
         <p>"The react-state-factory works as expected" ... qwik works better?</p>
-        {/* <button class={twButton} onClick$={() => virtualSetup(state)}>start the game</button> */}
+        <button class={twButton} onClick$={() => virtualSetup(state)}>game reset</button>
         <br />
         <section class="grid grid-cols-4 gap-4 place-items-start">
           <section>

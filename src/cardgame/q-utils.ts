@@ -41,7 +41,7 @@ export const playCard:ACT<Card> = (card, store) => {
     : ""
     ;
   store.flying = card;
-  store.owners[card.owner].hand = hand;
+  store.owners[card.owner].hand = left;
 }
 export const playResult:DO = (store) => {
   if (store.flying === undefined || store.diff === undefined || !(store.flying.owner in store.owners)) return;
@@ -84,6 +84,7 @@ export const virtualSetup:DO = (store) => {
   focus(starterId, store);
   const [card] = store.owners[starterId].hand;
   playToCenter(card, store);
+  draw(starterId, store);
   draw(starterId, store);
   focus(nextId, store);
 }
