@@ -19,7 +19,7 @@ export const draw:ACT<OwnerId> = (id, store) => { id; store; }
 export const focus:ACT<OwnerId> = (id, store) => { store.focus = id; }
 
 export const playToCenter:ACT<Card> = (card, store) => {
-  if (!(card?.owner in store.owners) || store.flying) return;
+  if (!(card.owner in store.owners) || store.flying) return;
 
   store.center = card;
   // store.owners[card.owner].hand = store.owners[card.owner].hand.filter(({id}) => id !== card.id);

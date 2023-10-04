@@ -21,7 +21,7 @@ export default component$(() => {
         <section class="grid grid-cols-4 gap-4 place-items-start">
           <section>
             <p>Center {state.focus}</p>
-            {state?.center && cardInfo(state.center)}
+            {state.center && cardInfo(state.center)}
           </section>
           {state.flying && (
             <section>
