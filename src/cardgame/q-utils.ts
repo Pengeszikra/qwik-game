@@ -18,40 +18,41 @@ export const draw:ACT<OwnerId> = (id, store) => { id; store; }
 
 export const focus:ACT<OwnerId> = (id, store) => { store.focus = id; }
 
-export const playCard:ACT<Card> = (card, store) => { 
+export const playToCenter:ACT<Card> = (card, store) => {
+  if (!(card?.owner in store.owners) || store.flying) return;
+
+  store.center = card;
+  // store.owners[card.owner].hand = store.owners[card.owner].hand.filter(({id}) => id !== card.id);
+}
+export const playCard:ACT<Card> = (card, store) => {
   if (!(card.owner in store.owners) || store.flying) return;
   const hand = store.owners[card.owner].hand;
   if (hand.length < 1) return;
   const left = hand.filter(({id}) => id !== card.id);
   if (hand.length > 0 && left.length === hand.length) return;
   const flying = store.center === undefined ? store.flying : card;
-  const diff = store.center && flying
+
+  store.diff = (store.center && flying)
     ? diffByCard(store.center, flying)
     : store.diff
     ;
-  const debug = store.center && flying
+  store.debug = (store.center && flying)
     ? debugFunction(store.center, flying)
     : ""
     ;
-
   store.flying = card;
-  store.diff = diff;
-  store.debug = debug;
   store.owners[card.owner].hand = hand;
-
-  
 }
-export const playResult:DO = ( store) => {
-  if (store.flying === undefined || store.diff === undefined) return store;
-  const {score, hand, deck} = store.owners[store.flying.owner];
+export const playResult:DO = (store) => {
+  if (store.flying === undefined || store.diff === undefined || !(store.flying.owner in store.owners)) return;
+  const {hand, deck} = store.owners[store.flying.owner];
   const needToFill = hand.length < 3 && deck.length;
-
-  store.owner[store.flying.owner].hand = needToFill ? [...hand, deck[0]] : hand;
-  store.owner[store.flying.owner].deck = needToFill ? deck.slice(1) : deck;
-  store.owner[store.flying.owner].score = score + store.diff;
+  store.owners[store.flying.owner].hand = needToFill ? [...hand, deck[0]] : hand;
+  store.owners[store.flying.owner].deck = needToFill ? deck.slice(1) : deck;
+  store.owners[store.flying.owner].score += store.diff;
   store.center = store.flying;
-  store.flying = undefined,
-  store.diff = undefined,
+  store.flying = undefined;
+  store.diff = undefined;
   store.debug = "",
   store.focus = nextOf(store.order, store.focus);
  }
@@ -80,10 +81,9 @@ export const virtualSetup:DO = (store) => {
   }
 
   const [starterId, nextId] = store.order;
-  const [card] = store.owners[starterId].hand;
   focus(starterId, store);
-  playCard(card, store);
-  playResult(store);
+  const [card] = store.owners[starterId].hand;
+  playToCenter(card, store);
   draw(starterId, store);
   focus(nextId, store);
 }
