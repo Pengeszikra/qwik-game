@@ -1,91 +1,80 @@
-import { $, component$ } from "@builder.io/qwik";
-import { routeLoader$, z, type DocumentHead } from "@builder.io/qwik-city";
-import type { InitialValues, SubmitHandler } from '@modular-forms/qwik';
-import { formAction$, useForm, zodForm$ } from '@modular-forms/qwik';
+import { component$, useStore, useVisibleTask$ } from "@builder.io/qwik";
+import { cardInfo } from "~/cardgame/card";
+import { initialMultiState } from "~/cardgame/cardFactory";
+import { playCard, playResult, swapDebug, undo, virtualSetup } from "~/cardgame/q-utils";
 
-const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'Please enter your email.')
-    .email('The email address is badly formatted.'),
-  password: z
-    .string()
-    .min(1, 'Please enter your password.')
-    .min(8, 'You password must have 8 characters or more.'),
-});
-
-type LoginForm = z.infer<typeof loginSchema>;
-
-export const useFormLoader = routeLoader$<InitialValues<LoginForm>>(() => ({
-  email: '',
-  password: '',
-}));
- 
-export const useFormAction = formAction$<LoginForm>((values) => {
-  console.log(values)
-}, zodForm$(loginSchema));
+const twButton = "bg-green-400 hover:bg-green-200 text-black p-1 rounded text-center mt-2";
 
 export default component$(() => {
-  const [loginForm, { Form, Field }] = useForm<LoginForm>({
-    loader: useFormLoader(),
-    action: useFormAction(),
-    validate: zodForm$(loginSchema),
-  });
 
-  console.log(loginForm);
- 
-  const handleSubmit = $<SubmitHandler<LoginForm>>((values, event) => {
-    // Runs on client
-    console.log(values, event);
-  });
+  const state = useStore(initialMultiState);
+
+  useVisibleTask$(async () => virtualSetup(state));
 
   return (
-    <main class="grid place-items-center min-h-screen">
-      <section class="grid gap-2 justify-start">
-        <h1 class="text-[1.7em]"><span class="text-blue-400">Qwick </span>
-        is the new 
-        <span class="text-white"> solution?</span>
-        </h1>
-        <p>create </p>
-        <span class="bg-neutral-700 p-2 rounded">pnpm create qwick@lates</span>
-        <p>add tailwind</p>
-        <span class="bg-neutral-700 p-2 rounded">pnpm qwik add tailwind</span>
-        <p>
-          The theme switching is really easy with this app
-          <br />
-          just need to edit the <span class="bg-neutral-700 rounded">root.tsx</span>
-        </p>
-        <p></p>
-    <Form onSubmit$={handleSubmit} class="grid gap-2 items-end w-auto">
-      <Field name="email">
-        {(field, props) => (
-          <label>
-            name: <input class="p-2" {...props} type="email" value={field.value} />
-            {field.error && <div class="text-orange-400">{field.error}</div>}
-          </label>
-        )}
-      </Field>
-      <Field name="password">
-        {(field, props) => (
-          <label>
-            password: <input class="p-2" {...props} type="password" value={field.value} />
-            {field.error && <div class="text-orange-400">{field.error}</div>}
-          </label>
-        )}
-      </Field>
-      <button type="submit" class="bg-blue-500 text-white rounded p-2">Login</button>
-    </Form>
+    <main class="bg-black min-h-screen grid place-items-center relative text-green-300">
+      <section class="w-3/4 overflow-hidden">
+        <p><s>React</s></p>
+        <p>"The react-state-factory works as expected" ... qwik works better?</p>
+        <button class={twButton} onClick$={() => virtualSetup(state)}>game reset</button>
+        <br />
+        <section class="grid grid-cols-4 gap-4 place-items-start">
+          <section>
+            <p>Center {state.focus}</p>
+            {state.center && cardInfo(state.center)}
+          </section>
+          {state.flying && (
+            <section>
+              <p>{state.owners[state.flying.owner].name} is playing:</p>
+              {cardInfo(state.flying)}
+            </section>
+          )}
+          {state.center && state.flying && (
+            <section class="col-span-2">
+              <p>Function = result</p>
+              <p>{state.debug} = {state.diff}</p>
+            </section>
+          )}
+        </section>
+        <br />
+        <section class="grid grid-cols-4 gap-4">
+          {state.order.map(ownerId => (
+            <section key={ownerId}>
+              <span class={ownerId === state.focus ? "bg-green-400 text-black p-1 rounded" : ""}>
+                {state.owners[ownerId].name} score: {state.owners[ownerId].score}
+              </span>
+              <p>- hand: </p>{
+                state.owners[ownerId].hand.map(card => (
+                  ownerId === state.focus && !state.flying
+                    ? <p key={card.id}><button type="button" class={`${twButton} mb-2`} onClick$={() => playCard(card, state)}>{cardInfo(card)}</button></p>
+                    : <p key={card.id}>{cardInfo(card)}</p>
+                ))
+              }
+              {state.flying && ownerId === state.focus && (
+                <p class="flex gap-2">
+                  <button type="button" class={twButton} onClick$={() => state.flying && undo(state.flying, state)}>undo</button>
+                  <button type="button" class={twButton} onClick$={() => playResult(state)}>consent</button>
+                </p>
+              )}
+              <p>- deck: </p>{
+                state.owners[ownerId].deck.map(card => (
+                  <p key={card.id}>{cardInfo(card)}</p>
+                ))
+              }
+            </section>
+          ))}
+        </section>
+        <p class="my-4">Score order:</p>
+        <section class="grid grid-cols-4 gap-4">
+          {state.order
+            .map(ownerId => state.owners[ownerId])
+            .sort(({score:a}, {score:b}) => b - a)
+            .map(({name, score}) => <p key={name}>{name} : {score}</p>)
+          }
+        </section>
+        <button class={twButton} onClick$={() => swapDebug(state)}>{state.visible ? "off" : "debug"}</button>
+        {state.visibility && <pre class="text-green-700">{JSON.stringify(state, null, 2)}</pre>}
       </section>
     </main>
-  );
+  )
 });
-
-export const head: DocumentHead = {
-  title: "Qwik looks react replacer",
-  meta: [
-    {
-      name: "description",
-      content: "Qwik game test page",
-    },
-  ],
-};
