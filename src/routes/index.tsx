@@ -12,11 +12,23 @@ export default component$(() => {
   useVisibleTask$(async () => virtualSetup(state));
 
   return (
-    <main class="bg-black min-h-screen grid place-items-center relative text-green-300">
+    <main class="bg-black min-h-screen grid relative text-green-300 justify-items-center">
       <section class="w-3/4 overflow-hidden">
-        <p><s>React</s></p>
-        <p>"The react-state-factory works as expected" ... qwik works better?</p>
-        <button class={twButton} onClick$={() => virtualSetup(state)}>game reset</button>
+        <br />
+        <p>QWIK win over <s>React</s> and async win over <s>saga</s> and jsDoc win over <s>Tyepscript</s>?</p>
+        <p>"The react-state-factory works as expected" ... but shortly obsolated?</p>
+        <p class="my-4">Score order:</p>
+        <section class="grid grid-cols-4 gap-4">
+          {state.order
+            .map(ownerId => state.owners[ownerId])
+            .sort(({score:a}, {score:b}) => b - a)
+            .map(({name, score}) => <p key={name}>{name} : {score}</p>)
+          }
+        </section>
+        <section class="flex gap-2">
+          <button class={twButton} onClick$={() => swapDebug(state)}>{state.visible ? "off" : "debug"}</button>
+          <button class={twButton} onClick$={() => virtualSetup(state)}>game reset</button>
+        </section>
         <br />
         <section class="grid grid-cols-4 gap-4 place-items-start">
           <section>
@@ -64,15 +76,6 @@ export default component$(() => {
             </section>
           ))}
         </section>
-        <p class="my-4">Score order:</p>
-        <section class="grid grid-cols-4 gap-4">
-          {state.order
-            .map(ownerId => state.owners[ownerId])
-            .sort(({score:a}, {score:b}) => b - a)
-            .map(({name, score}) => <p key={name}>{name} : {score}</p>)
-          }
-        </section>
-        <button class={twButton} onClick$={() => swapDebug(state)}>{state.visible ? "off" : "debug"}</button>
         {state.visibility && <pre class="text-green-700">{JSON.stringify(state, null, 2)}</pre>}
       </section>
     </main>

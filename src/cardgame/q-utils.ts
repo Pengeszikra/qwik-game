@@ -66,7 +66,6 @@ export const reset:DO = (store) => {
   store.debug = "";
 }
 
-
 export const setPercent = (value:number, store: MultipleState) => { value; store; }
 
 export const startBattle = (value:number, store: MultipleState) => { value; store; }
@@ -97,6 +96,37 @@ export const virtualSetup:DO = (store) => {
   draw(starterId, store);
   draw(starterId, store);
   focus(nextId, store);
+
+  const STOP_SIGNAL = "stop-signal";
+    Promise.any([
+      autoplay(store),
+      delay(2000).then(() => STOP_SIGNAL)
+    ]).then(() => 
+      {throw new Error(STOP_SIGNAL);}
+    ).catch((error) => {
+      console.log('--- signal is catched ---', error)
+      reset(store);
+    })
 }
 
 export const swapDebug:DO = (store) => store.visibility = !(store.visibility);
+
+export const delay = (time:number) => new Promise(resolver => setTimeout(resolver, time));
+
+export const autoplay:DO = async(store) => {
+  const speed = 100;
+
+  while (store.owners[store.focus].hand.length >= 1) {
+    for (const owId of store.order) {
+      console.log(`actor: ${owId}`)
+      await Promise.any([
+        delay(speed)
+      ])
+      focus(owId, store);
+      await delay(speed);
+      playCard(store.owners[owId].hand[0], store);
+      await delay(speed);
+      playResult(store);
+    }
+  }
+};
