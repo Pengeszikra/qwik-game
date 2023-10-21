@@ -46,6 +46,23 @@ export const sitDown = (
 
 This starter site is configured to deploy to [Vercel Edge Functions](https://vercel.com/docs/concepts/functions/edge-functions), which means it will be rendered at an edge location near to your users.
 
+## Stop Process 
+
+```ts
+  // first implementation 
+  
+  const STOP_SIGNAL = "stop-signal";
+  Promise.any([
+    autoplay(store),
+    delay(2000).then(() => STOP_SIGNAL)
+  ]).then(() => 
+    {throw new Error(STOP_SIGNAL);}
+  ).catch((error) => {
+    reset(store);
+    console.log('--- signal is catched ---', error)
+  })
+```
+
 ## Installation
 
 The adaptor will add a new `vite.config.ts` within the `adapters/` directory, and a new entry file will be created, such as:

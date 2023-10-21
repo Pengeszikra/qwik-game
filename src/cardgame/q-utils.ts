@@ -97,16 +97,12 @@ export const virtualSetup:DO = (store) => {
   draw(starterId, store);
   focus(nextId, store);
 
-  const STOP_SIGNAL = "stop-signal";
-    Promise.any([
-      autoplay(store),
-      delay(2000).then(() => STOP_SIGNAL)
-    ]).then(() => 
-      {throw new Error(STOP_SIGNAL);}
-    ).catch((error) => {
-      console.log('--- signal is catched ---', error)
-      reset(store);
-    })
+  Promise.any([
+    autoplay(store),
+    delay(2000)
+  ]).then(() => 
+    reset(store)
+  )
 }
 
 export const swapDebug:DO = (store) => store.visibility = !(store.visibility);
