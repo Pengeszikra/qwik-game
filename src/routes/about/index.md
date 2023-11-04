@@ -14,3 +14,22 @@ just need to edit the root.tsx
     {/* ... */}
   </body>
 ```
+
+## How can I give a right solution for <s>state</s> store handling?
+
+> this will be answer for a stop long process
+
+```ts
+  // first implementation 
+  
+  const STOP_SIGNAL = "stop-signal";
+  Promise.any([
+    autoplay(store),
+    delay(2000).then(() => STOP_SIGNAL)
+  ]).then(() => 
+    {throw new Error(STOP_SIGNAL);}
+  ).catch((error) => {
+    reset(store);
+    console.log('--- signal is catched ---', error)
+  })
+```
